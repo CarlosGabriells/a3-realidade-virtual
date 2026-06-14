@@ -1,0 +1,8 @@
+.DS_Store
+.claude/
+.docx-template-render/
+
+__pycache__/
+*.py[cod]
+
+report/qa/

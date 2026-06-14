@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Acessibilidade em VR — NBR 9050</title>
+
+    <!-- A-Frame WebXR fixado localmente para o app funcionar sem depender de CDN -->
+    <script src="vendor/aframe/aframe-1.5.0.min.js"></script>
+
+    <link rel="stylesheet" href="css/hud.css?v=24" />
+  </head>
+  <body>
+
+    <!-- ===================== HUD ===================== -->
+    <div id="hud">
+      <div class="hud-header">
+        <div>
+          <h1>Acessibilidade em VR — NBR 9050</h1>
+          <p class="sub">Pré-auditoria visual em escala 1:1</p>
+        </div>
+        <button id="hud-toggle" class="hud-toggle" type="button" onclick="toggleHud()" aria-label="Minimizar menu" aria-expanded="true">−</button>
+      </div>
+
+      <div id="hud-content">
+        <div id="app-status" class="app-status" role="status">Carregando ambiente 3D...</div>
+
+        <div class="tabs">
+          <button class="tab active" type="button" onclick="switchTab('ambiente')">Ambiente</button>
+          <button class="tab" type="button" onclick="switchTab('score')">Medições</button>
+          <button class="tab" type="button" onclick="switchTab('teoria')">Projeto</button>
+        </div>
+
+        <!-- ======= AMBIENTE ======= -->
+        <div id="panel-ambiente" class="panel active">
+          <div class="problem-card">
+            <strong>Problema atendido</strong>
+            <span>Detectar barreiras dimensionais antes da obra, comparando alternativas do projeto com critérios selecionados da NBR 9050.</span>
+          </div>
+
+          <div class="room-btns">
+            <button class="rbtn active" type="button" onclick="loadRoom(0)">Entrada / Rampa</button>
+            <button class="rbtn" type="button" onclick="loadRoom(1)">Corredor</button>
+            <button class="rbtn" type="button" onclick="loadRoom(2)">Banheiro</button>
+          </div>
+
+          <div id="decision-summary" class="decision-summary" aria-live="polite"></div>
+
+          <div id="parameters-container"></div>
+
+          <div class="action-grid">
+            <button class="primary-action" type="button" onclick="applyCorrections()">Aplicar correções mínimas</button>
+            <button class="secondary-action" type="button" onclick="exportReport()">Exportar diagnóstico</button>
+          </div>
+
+          <button class="reset-view" type="button" onclick="resetView()">Recentrar visão</button>
+          <div class="navigation-help">
+            <span class="nav-title">Navegação com colisão</span>
+            <span><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> ou setas para mover</span>
+            <span>Mouse para olhar · controle analógico em VR</span>
+            <span>Rotas não conformes são bloqueadas para o perfil cadeirante.</span>
+          </div>
+        </div>
+
+        <!-- ======= MEDIÇÕES ======= -->
+        <div id="panel-score" class="panel">
+          <div class="scale-card">
+            <strong>Escala geométrica 1:1</strong>
+            <span>1 unidade 3D = 1 metro</span>
+            <span>Quadrícula dos pisos = 0,50 m</span>
+            <span>Altura da câmera = 1,20 m</span>
+          </div>
+          <div class="score-box">
+            <h3>Valores do modelo × critérios</h3>
+            <div id="score-content"></div>
+            <p class="score-disclaimer">Pré-verificação educacional. Não substitui levantamento, projeto executivo ou laudo profissional.</p>
+          </div>
+        </div>
+
+        <!-- ======= PROJETO ======= -->
+        <div id="panel-teoria" class="panel">
+
+          <div class="theory-section">
+            <h3>Entrega de engenharia</h3>
+            <div class="note">
+              O protótipo representa uma <strong>pré-auditoria de projeto</strong>:
+              recebe dimensões reais do anteprojeto, identifica não conformidades,
+              calcula correções mínimas, reconstrói o espaço em escala 1:1 e exporta
+              um diagnóstico para apoiar a revisão antes da obra.
+            </div>
+          </div>
+
+          <div class="theory-section">
+            <h3>Decisão produzida</h3>
+            <div class="note">
+              O cenário inicial funciona como linha de base. Cada alteração atualiza
+              o percentual de atendimento e contabiliza as incompatibilidades eliminadas.
+              O resultado responde objetivamente <strong>o que precisa mudar</strong>,
+              <strong>quanto precisa mudar</strong> e <strong>qual foi o ganho</strong>.
+            </div>
+          </div>
+
+          <div class="theory-section">
+            <h3>O que é medido</h3>
+            <div class="note">
+              Corredor: <span class="norm">largura livre</span><br>
+              Porta: <span class="norm">vão livre</span><br>
+              Rampa: <span class="norm">desnível ÷ comprimento</span><br>
+              Banheiro: <span class="norm">box e diâmetro de giro</span><br>
+              Circulação: <span class="norm">colisões e obstáculos</span>
+            </div>
+          </div>
+
+          <div class="theory-section">
+            <h3>Limite do protótipo</h3>
+            <div class="note">
+              A aplicação audita os parâmetros informados, mas não faz levantamento
+              automático do edifício e não cobre toda a norma.
+              Para uso profissional, a evolução natural seria importar IFC/glTF
+              e gerar um relatório técnico rastreável.
+            </div>
+          </div>
+
+          <div class="theory-section">
+            <h3>Tecnologia aplicada</h3>
+            <div class="note">
+              <strong>A-Frame / Three.js:</strong> WebGL e WebXR.<br>
+              <strong>Modelagem procedural:</strong> geometria em metros.<br>
+              <strong>Colisão:</strong> valida a rota navegável.<br>
+              <strong>Feedback:</strong> recalcula medidas a cada alternativa.
+            </div>
+          </div>
+
+        </div>
+      </div>
+      <div
+        id="hud-resizer"
+        class="hud-resizer"
+        role="separator"
+        aria-label="Redimensionar menu"
+        aria-orientation="horizontal"
+        tabindex="0"
+        title="Arraste para redimensionar o menu"
+      ></div>
+    </div>
+    <!-- /hud -->
+
+    <!-- Overlay de violação -->
+    <div id="violation-overlay"></div>
+
+    <!-- ===================== CENA 3D / VR ===================== -->
+    <a-scene
+      background="color: #0d1220"
+      renderer="antialias: true; colorManagement: true; physicallyCorrectLights: true"
+      shadow="type: pcfsoft"
+      vr-mode-ui="enabled: true"
+    >
+      <a-sky color="#9eb8d5"></a-sky>
+
+      <!-- Câmera: posição baixa (perspectiva de cadeirante ~1,2 m) -->
+      <a-entity id="rig" position="0 0 6" accessible-movement="speed: 2.3; radius: 0.28">
+        <a-camera
+          wasd-controls="enabled: false"
+          look-controls
+          position="0 1.2 0"
+        ></a-camera>
+      </a-entity>
+
+      <!-- Iluminação -->
+      <a-entity light="type: hemisphere; intensity: 0.75; color: #d7eaff; groundColor: #536247"></a-entity>
+      <a-entity light="type: directional; intensity: 1.1; color: #fff4dd; castShadow: true" position="-4 9 6"></a-entity>
+      <a-entity light="type: directional; intensity: 0.25; color: #7894c8" position="6 5 -5"></a-entity>
+
+      <!-- Conteúdo procedural gerado pelos módulos em js/environments -->
+      <a-entity id="room-root"></a-entity>
+    </a-scene>
+
+    <!-- Ordem: núcleo geométrico, construtores, regras, componentes e interface -->
+    <script src="js/scene-builder.js?v=24"></script>
+    <script src="js/environments/entrance.js?v=24"></script>
+    <script src="js/environments/corridor.js?v=24"></script>
+    <script src="js/environments/bathroom.js?v=24"></script>
+    <script src="js/rooms.js?v=24"></script>
+    <script src="js/navigation.js?v=24"></script>
+    <script src="js/hud.js?v=24"></script>
+  </body>
+</html>
