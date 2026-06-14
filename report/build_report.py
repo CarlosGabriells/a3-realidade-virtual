@@ -819,10 +819,11 @@ def build():
     add_body(
         doc,
         "Foram realizadas checagens de sintaxe em todos os módulos JavaScript, inspeções no navegador e testes "
-        "automatizados com a biblioteca nativa de testes do Node.js. Os casos cobrem o bloqueio da rampa não "
-        "conforme, a colisão dos corrimãos, a impossibilidade de escalar a face lateral do patamar, a "
-        "continuidade da rampa corrigida e a permanência dos equipamentos do corredor em 0,10 m. Os quatro "
-        "testes passaram, e os cenários corrigidos atingiram 5 de 5 critérios na entrada, 3 de 3 no corredor e "
+        "automatizados com a biblioteca nativa de testes do Node.js. Quatro casos de navegação cobrem o bloqueio "
+        "da rampa não conforme, a colisão dos corrimãos, a impossibilidade de escalar a face lateral do patamar, "
+        "a continuidade da rampa corrigida e a permanência dos equipamentos do corredor em 0,10 m. Outros quatro "
+        "casos verificam as regras paramétricas, as pontuações iniciais e a correção integral dos 14 critérios. "
+        "Os oito testes passaram, e os cenários corrigidos atingiram 5 de 5 critérios na entrada, 3 de 3 no corredor e "
         "6 de 6 no banheiro. Esses resultados confirmam a coerência interna das regras, mas não equivalem a "
         "validação externa ou certificação normativa."
     )

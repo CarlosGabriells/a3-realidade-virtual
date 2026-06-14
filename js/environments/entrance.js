@@ -40,6 +40,16 @@
     B.box(parent, "8.35 1.35 -3.75", 1.6, 2.7, 0.5, "#b9cbd8");
     B.box(parent, "8.35 1.35 3.75", 1.6, 2.7, 0.5, "#b9cbd8");
     B.box(parent, "8.15 2.78 0", 1.75, 0.18, 8.4, "#465963");
+    [-0.78, 0.78].forEach(function (z) {
+      B.box(parent, "7.35 2.34 " + z, 0.08, 0.22, 0.14, "#34444d", {
+        metalness: 0.35,
+        roughness: 0.32,
+      });
+      B.sphere(parent, "7.27 2.30 " + z, 0.07, "#fff0b8", {
+        opacity: 0.82,
+        cast: false,
+      });
+    });
     [-2.4, 2.4].forEach(function (z) {
       B.box(parent, "7.40 1.45 " + z, 0.035, 1.50, 2.20, COLORS.glass, {
         opacity: 0.32,
@@ -98,6 +108,11 @@
     B.plane(root, "0 0 0", "-90 0 0", 22, 12, "#4e704f");
     B.box(root, "-5 0.04 0", 4, 0.08, 7.2, "#c4c9cc");
     B.tileFloor(root, -5, 0, 4, 7.2, "#c8ced1");
+    B.plane(root, (startX - 0.22) + " 0.052 0", "-90 0 0", 0.42,
+      Math.max(1.20, width + 0.30), "#d4aa28", {
+        roughness: 0.76,
+        cast: false,
+      });
     facade(root, rise, values.doorWidth);
     rampWedge(root, startX, length, width, rise, rampOk ? COLORS.concrete : "#a85f5a");
     B.box(root, (startX + length / 2) + " 0.012 " + (-width / 2 + 0.045),

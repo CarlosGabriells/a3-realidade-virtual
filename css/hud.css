@@ -109,13 +109,22 @@ body { margin: 0; font-family: system-ui, -apple-system, "Segoe UI", Roboto, san
 /* ---- Ambiente selector ---- */
 .room-btns { display: flex; gap: 4px; flex-wrap: wrap; margin: 4px 0 10px; }
 .rbtn {
-  padding: 5px 9px; border: 1px solid #1e2d40;
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 5px 8px; border: 1px solid #1e2d40;
   border-radius: 6px; background: #111827;
   color: #90a4b8; cursor: pointer; font-size: 10px; font-weight: 600;
   transition: all 0.15s;
 }
 .rbtn:hover { border-color: #4fc3f7; color: #4fc3f7; }
 .rbtn.active { background: #0d2d45; border-color: #4fc3f7; color: #4fc3f7; }
+.room-score {
+  min-width: 25px; padding: 2px 4px;
+  border-radius: 8px; background: #263241;
+  color: #9eb3c2; font-size: 8px; text-align: center;
+}
+.room-score.complete { background: #17432d; color: #76dda0; }
+.room-score.partial { background: #493711; color: #f2c45c; }
+.room-score.critical { background: #492222; color: #ff9189; }
 
 .decision-summary {
   margin: 0 0 8px; padding: 9px;
@@ -142,6 +151,29 @@ body { margin: 0; font-family: system-ui, -apple-system, "Segoe UI", Roboto, san
 .decision-impact {
   margin: 7px 0 0; color: #a7bdc9; font-size: 9px; line-height: 1.35;
 }
+.project-summary {
+  margin: 0 0 9px; padding: 9px;
+  border: 1px solid #31556b; border-radius: 8px;
+  background: linear-gradient(135deg, rgba(19, 48, 65, 0.78), rgba(12, 25, 38, 0.78));
+}
+.project-summary-head,
+.project-summary-foot {
+  display: flex; align-items: center; justify-content: space-between; gap: 8px;
+}
+.project-summary-head span {
+  color: #81a4b8; font-size: 8px; text-transform: uppercase; letter-spacing: 0.5px;
+}
+.project-summary-head strong { color: #e5f5fc; font-size: 11px; }
+.project-summary-track {
+  height: 6px; margin: 7px 0; overflow: hidden;
+  border-radius: 5px; background: #202d38;
+}
+.project-summary-track span {
+  display: block; height: 100%; transition: width 0.25s ease;
+  background: linear-gradient(90deg, #d35454, #e3a638 55%, #49b879);
+}
+.project-summary-foot { color: #7890a0; font-size: 8px; }
+.project-summary-foot strong { color: #b9d1dc; }
 
 /* ---- Editor paramétrico ---- */
 .parameter-row {
@@ -184,7 +216,7 @@ body { margin: 0; font-family: system-ui, -apple-system, "Segoe UI", Roboto, san
 .action-grid {
   display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 10px;
 }
-.primary-action, .secondary-action {
+.primary-action, .secondary-action, .project-action {
   min-height: 34px; padding: 6px;
   border-radius: 6px; cursor: pointer;
   font-size: 9px; font-weight: 750; line-height: 1.2;
@@ -195,7 +227,14 @@ body { margin: 0; font-family: system-ui, -apple-system, "Segoe UI", Roboto, san
 .secondary-action {
   border: 1px solid #365d79; background: #142b3c; color: #8bd5f5;
 }
-.primary-action:hover, .secondary-action:hover { filter: brightness(1.15); }
+.project-action {
+  border: 1px solid #a2762d; background: #3b2b12; color: #ffd27b;
+}
+.primary-action:hover, .secondary-action:hover, .project-action:hover { filter: brightness(1.15); }
+.primary-action:focus-visible, .secondary-action:focus-visible, .project-action:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
 
 /* ---- Score painel ---- */
 .score-box {

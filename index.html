@@ -8,7 +8,7 @@
     <!-- A-Frame WebXR fixado localmente para o app funcionar sem depender de CDN -->
     <script src="vendor/aframe/aframe-1.5.0.min.js"></script>
 
-    <link rel="stylesheet" href="css/hud.css?v=24" />
+    <link rel="stylesheet" href="css/hud.css?v=25" />
   </head>
   <body>
 
@@ -38,6 +38,8 @@
             <span>Detectar barreiras dimensionais antes da obra, comparando alternativas do projeto com critérios selecionados da NBR 9050.</span>
           </div>
 
+          <div id="project-summary" class="project-summary" aria-live="polite"></div>
+
           <div class="room-btns">
             <button class="rbtn active" type="button" onclick="loadRoom(0)">Entrada / Rampa</button>
             <button class="rbtn" type="button" onclick="loadRoom(1)">Corredor</button>
@@ -50,6 +52,8 @@
 
           <div class="action-grid">
             <button class="primary-action" type="button" onclick="applyCorrections()">Aplicar correções mínimas</button>
+            <button class="secondary-action" type="button" onclick="restoreCurrentRoom()">Restaurar ambiente</button>
+            <button class="project-action" type="button" onclick="applyAllCorrections()">Corrigir projeto completo</button>
             <button class="secondary-action" type="button" onclick="exportReport()">Exportar diagnóstico</button>
           </div>
 
@@ -176,12 +180,12 @@
     </a-scene>
 
     <!-- Ordem: núcleo geométrico, construtores, regras, componentes e interface -->
-    <script src="js/scene-builder.js?v=24"></script>
-    <script src="js/environments/entrance.js?v=24"></script>
-    <script src="js/environments/corridor.js?v=24"></script>
-    <script src="js/environments/bathroom.js?v=24"></script>
-    <script src="js/rooms.js?v=24"></script>
-    <script src="js/navigation.js?v=24"></script>
-    <script src="js/hud.js?v=24"></script>
+    <script src="js/scene-builder.js?v=25"></script>
+    <script src="js/environments/entrance.js?v=25"></script>
+    <script src="js/environments/corridor.js?v=25"></script>
+    <script src="js/environments/bathroom.js?v=25"></script>
+    <script src="js/rooms.js?v=25"></script>
+    <script src="js/navigation.js?v=25"></script>
+    <script src="js/hud.js?v=25"></script>
   </body>
 </html>

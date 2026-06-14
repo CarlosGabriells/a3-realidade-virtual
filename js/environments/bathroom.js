@@ -112,6 +112,10 @@
     var toiletX = -half + 0.48;
     var toiletZ = -depth + 0.62;
     toilet(root, toiletX, toiletZ);
+    B.box(root, toiletX + " 1.18 " + (-depth + 0.095), 0.34, 0.22, 0.035, "#e7ecee", {
+      roughness: 0.32,
+      cast: false,
+    });
     if (values.grabBars) supportBars(root, toiletX, toiletZ, -half + 0.10, -depth + 0.10);
 
     var turnRadius = values.turnDiameter / 2;
@@ -129,6 +133,14 @@
     B.plane(root, sinkX + " 1.55 -0.105", "0 180 0", 0.61, 0.77, "#9ccbd9", {
       metalness: 0.35,
       roughness: 0.12,
+    });
+    B.box(root, (half - 0.11) + " 1.22 -0.78", 0.06, 0.26, 0.14, "#d5e2e5", {
+      roughness: 0.30,
+    });
+    B.cylinder(root, "0 0.018 " + (-depth + 0.36), 0.07, 0.015, "#7e8d94", {
+      metalness: 0.58,
+      roughness: 0.26,
+      cast: false,
     });
     B.box(root, "0 2.64 " + (-depth / 2), width - 0.18, 0.10, depth - 0.18, "#f2f5f6", {
       roughness: 0.84,

@@ -42,6 +42,15 @@ var ROOMS = [
   },
 ];
 
+var MODEL_RULES = Object.freeze({
+  CORRIDOR_MAX_PROJECTION: 0.10,
+  BATHROOM_LAYOUT_WIDTH: 2.60,
+  BATHROOM_LAYOUT_DEPTH: 2.50,
+  SINK_MIN_HEIGHT: 0.80,
+  SINK_MAX_HEIGHT: 0.85,
+  SINK_RECOMMENDED_HEIGHT: 0.83,
+});
+
 function formatMeters(value) {
   return value.toFixed(2).replace(".", ",") + " m";
 }
@@ -83,7 +92,8 @@ function getRoomMeasurements(room, values) {
       measurement("width", "Largura livre", formatMeters(values.width), "≥ 1,20 m",
         values.width >= NBR.CORREDOR_MIN, "Aumentar a faixa de circulação para no mínimo 1,20 m."),
       measurement("obstacleDepth", "Saliência na circulação", formatMeters(values.obstacleDepth), "≤ 0,10 m",
-        values.obstacleDepth <= 0.10, "Embutir ou realocar o equipamento para limitar a saliência a 0,10 m."),
+        values.obstacleDepth <= MODEL_RULES.CORRIDOR_MAX_PROJECTION,
+        "Embutir ou realocar o equipamento para limitar a saliência a 0,10 m."),
       measurement("tactile", "Sinalização tátil", values.tactile ? "Faixa de 0,30 m" : "Ausente",
         "Tátil + contraste", values.tactile,
         "Adicionar sinalização tátil direcional com contraste visual."),
@@ -100,14 +110,17 @@ function getRoomMeasurements(room, values) {
       "Liberar um círculo de giro com diâmetro mínimo de 1,50 m."),
     measurement("functionalLayout", "Arranjo funcional simulado",
       formatMeters(values.roomWidth) + " × " + formatMeters(values.roomDepth), "≥ 2,60 × 2,50 m nesta planta",
-      values.roomWidth >= 2.60 && values.roomDepth >= 2.50,
+      values.roomWidth >= MODEL_RULES.BATHROOM_LAYOUT_WIDTH &&
+        values.roomDepth >= MODEL_RULES.BATHROOM_LAYOUT_DEPTH,
       "Ampliar para 2,60 × 2,50 m ou reposicionar as peças para não invadir a manobra."),
     measurement("doorWidth", "Vão livre da porta", formatMeters(values.doorWidth), "≥ 0,80 m",
       values.doorWidth >= NBR.PORTA_MIN, "Aumentar o vão livre da porta para pelo menos 0,80 m."),
     measurement("sink", "Lavatório",
       formatMeters(values.sinkHeight) + " · " + (values.pedestal ? "com coluna" : "suspenso"),
       "0,80–0,85 m · livre",
-      values.sinkHeight >= 0.80 && values.sinkHeight <= 0.85 && !values.pedestal,
+      values.sinkHeight >= MODEL_RULES.SINK_MIN_HEIGHT &&
+        values.sinkHeight <= MODEL_RULES.SINK_MAX_HEIGHT &&
+        !values.pedestal,
       "Usar lavatório suspenso entre 0,80 m e 0,85 m."),
     measurement("grabBars", "Barras de apoio",
       values.grabBars ? "Horizontais · lateral e fundo" : "Ausentes", "Obrigatórias",
@@ -129,15 +142,15 @@ function applyRecommendedValues(room, values) {
   }
   if (room.id === "corredor") {
     values.width = Math.max(values.width, NBR.CORREDOR_MIN);
-    values.obstacleDepth = Math.min(values.obstacleDepth, 0.10);
+    values.obstacleDepth = Math.min(values.obstacleDepth, MODEL_RULES.CORRIDOR_MAX_PROJECTION);
     values.tactile = true;
     return;
   }
-  values.roomWidth = Math.max(values.roomWidth, 2.60);
-  values.roomDepth = Math.max(values.roomDepth, 2.50);
+  values.roomWidth = Math.max(values.roomWidth, MODEL_RULES.BATHROOM_LAYOUT_WIDTH);
+  values.roomDepth = Math.max(values.roomDepth, MODEL_RULES.BATHROOM_LAYOUT_DEPTH);
   values.turnDiameter = Math.max(values.turnDiameter, NBR.GIRO_CADEIRANTE);
   values.doorWidth = Math.max(values.doorWidth, NBR.PORTA_MIN);
-  values.sinkHeight = 0.83;
+  values.sinkHeight = MODEL_RULES.SINK_RECOMMENDED_HEIGHT;
   values.grabBars = true;
   values.pedestal = false;
 }
@@ -228,7 +241,7 @@ function getNavigationConfig() {
       minZ: -values.width / 2 + 0.10,
       maxZ: values.width / 2 - 0.10,
     };
-    if (values.obstacleDepth > 0.10) {
+    if (values.obstacleDepth > MODEL_RULES.CORRIDOR_MAX_PROJECTION) {
       boxes.push(navigationBox(
         2.77, 3.23,
         values.width / 2 - values.obstacleDepth, values.width / 2,

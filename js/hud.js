@@ -112,6 +112,8 @@ function updateParameter(parameterId, value) {
   rebuildScene();
   updateScore();
   updateDecisionSummary();
+  updateProjectSummary();
+  updateRoomButtons();
 }
 
 // ---- Reconstrói cena com estado atual ----
@@ -259,6 +261,84 @@ function updateDecisionSummary() {
   container.appendChild(impact);
 }
 
+function roomScore(room) {
+  var values = projectValues[room.id] || createDefaultState(room);
+  var measurements = getRoomMeasurements(room, values);
+  return {
+    passed: measurements.filter(function(item) { return item.ok; }).length,
+    total: measurements.length,
+  };
+}
+
+function updateProjectSummary() {
+  var container = document.getElementById("project-summary");
+  if (!container) return;
+  var passed = 0;
+  var total = 0;
+
+  ROOMS.forEach(function(room) {
+    var score = roomScore(room);
+    passed += score.passed;
+    total += score.total;
+  });
+
+  var pct = total ? Math.round(passed / total * 100) : 0;
+  container.replaceChildren();
+
+  var head = document.createElement("div");
+  head.className = "project-summary-head";
+  var label = document.createElement("span");
+  label.textContent = "Projeto completo";
+  var value = document.createElement("strong");
+  value.textContent = passed + "/" + total + " critérios";
+  head.appendChild(label);
+  head.appendChild(value);
+
+  var track = document.createElement("div");
+  track.className = "project-summary-track";
+  var bar = document.createElement("span");
+  bar.style.width = pct + "%";
+  track.appendChild(bar);
+
+  var foot = document.createElement("div");
+  foot.className = "project-summary-foot";
+  foot.appendChild(summaryMetric("Atendimento", pct + "%"));
+  foot.appendChild(summaryMetric("Pendências", String(total - passed)));
+
+  container.appendChild(head);
+  container.appendChild(track);
+  container.appendChild(foot);
+}
+
+function updateRoomButtons() {
+  document.querySelectorAll(".rbtn").forEach(function(button, index) {
+    var room = ROOMS[index];
+    if (!room) return;
+    var score = roomScore(room);
+    var ratio = score.total ? score.passed / score.total : 0;
+    var badge = button.querySelector(".room-score");
+    if (!badge) {
+      badge = document.createElement("span");
+      badge.className = "room-score";
+      button.appendChild(badge);
+    }
+    badge.textContent = score.passed + "/" + score.total;
+    badge.className = "room-score " +
+      (ratio === 1 ? "complete" : ratio >= 0.5 ? "partial" : "critical");
+  });
+}
+
+function showAppStatus(message, type) {
+  var status = document.getElementById("app-status");
+  if (!status) return;
+  status.textContent = message;
+  status.className = "app-status" + (type ? " " + type : "");
+  window.clearTimeout(showAppStatus.timer);
+  showAppStatus.timer = window.setTimeout(function() {
+    status.classList.add("hidden");
+  }, 2200);
+}
+
 function applyCorrections() {
   var room = ROOMS[currentRoomIdx];
   applyRecommendedValues(room, currentValues);
@@ -267,7 +347,41 @@ function applyCorrections() {
   rebuildScene();
   updateScore();
   updateDecisionSummary();
+  updateProjectSummary();
+  updateRoomButtons();
   switchTab("score");
+  showAppStatus("Correções mínimas aplicadas ao ambiente.", "ready");
+}
+
+function restoreCurrentRoom() {
+  var room = ROOMS[currentRoomIdx];
+  projectValues[room.id] = createDefaultState(room);
+  currentValues = projectValues[room.id];
+  renderParameters();
+  rebuildScene();
+  updateScore();
+  updateDecisionSummary();
+  updateProjectSummary();
+  updateRoomButtons();
+  switchTab("ambiente");
+  resetView();
+  showAppStatus("Ambiente restaurado ao cenário inicial.");
+}
+
+function applyAllCorrections() {
+  ROOMS.forEach(function(room) {
+    if (!projectValues[room.id]) projectValues[room.id] = createDefaultState(room);
+    applyRecommendedValues(room, projectValues[room.id]);
+  });
+  currentValues = projectValues[ROOMS[currentRoomIdx].id];
+  renderParameters();
+  rebuildScene();
+  updateScore();
+  updateDecisionSummary();
+  updateProjectSummary();
+  updateRoomButtons();
+  switchTab("score");
+  showAppStatus("Projeto completo corrigido: 14/14 critérios atendidos.", "ready");
 }
 
 function buildReportText() {
@@ -480,6 +594,8 @@ document.addEventListener("DOMContentLoaded", function() {
       if (!baselineValues[room.id]) baselineValues[room.id] = createDefaultState(room);
     });
     loadRoom(0);
+    updateProjectSummary();
+    updateRoomButtons();
     if (status) {
       status.textContent = "Ambiente 3D pronto";
       status.classList.add("ready");

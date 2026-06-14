@@ -83,14 +83,22 @@
     var root = B.clearRoom();
     if (!root) return;
     var half = values.width / 2;
-    var compliant = values.obstacleDepth <= 0.10;
+    var compliant = values.obstacleDepth <= MODEL_RULES.CORRIDOR_MAX_PROJECTION;
 
     B.tileFloor(root, 5, 0, 14, values.width, "#d7dde0");
     [-half - 0.08, half + 0.08].forEach(function (z) {
       B.box(root, "5 1.35 " + z, 14, 2.70, 0.16, COLORS.wall);
       B.box(root, "5 0.11 " + (z + (z < 0 ? 0.10 : -0.10)), 14, 0.22, 0.05, "#6e7d86");
+      B.box(root, "5 1.02 " + (z + (z < 0 ? 0.085 : -0.085)), 14, 0.055, 0.018,
+        "#8da5b2", { cast: false });
     });
     B.box(root, "5 2.72 0", 14.1, 0.12, values.width + 0.30, "#d1d9de");
+    B.box(root, "12.02 1.35 0", 0.16, 2.70, values.width + 0.16, "#dce4e7");
+    B.box(root, "11.92 1.08 0", 0.035, 2.12, Math.min(0.92, values.width - 0.16), "#6e8794", {
+      opacity: 0.28,
+      metalness: 0.18,
+      roughness: 0.20,
+    });
     [-0.5, 2.3, 5.1, 7.9, 10.7].forEach(function (x) {
       B.ceilingLight(root, x, 0, Math.min(1.1, values.width * 0.75));
     });
